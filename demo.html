@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>html5 upload</title>
+<meta charset="utf-8">
+<meta name="description" content=""/>
+<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="js/js-fileuploader.js"></script>
+<script>
+	$(document).ready(function () {
+		var uploader = new FileUploader({});
+		uploader.setUploadUrl('post.php');
+
+		$('#fileUploadDiv1').bind('change',
+				function (e) {
+					uploader.setParams({
+						'valueA':2,
+						'valueB':'aloha'
+					})
+					.setCallbacks({
+						'load': function(e){
+							console.log('load complete for '+uploader.getLastUploadedFileName(e));
+						},
+						'progress': function(e) {
+							console.log( 'Progress = ' + uploader.trackUploadProgress(e));
+						}
+					})
+					.Upload(e)
+				}
+		);
+
+		$('#fileUploadDiv2').bind('click',
+				function (e) {
+					uploader.setParams({
+						'valueA': 'foo',
+						'valueB': 'bar'
+					})
+					.setFileList($('#fileUploadContainer'))
+					.setCallbacks({
+						'load': function(e){
+							console.log('load complete for '+uploader.getLastUploadedFileName(e));
+						},
+						'progress': function(e) {
+							console.log( 'Progress = ' + uploader.trackUploadProgress(e));
+						}
+					})
+					.Upload(e)
+		});
+
+		$('#fileUploadDiv3').bind('change',
+				function (e) {
+					uploader.setParams({
+						'balueA':2,
+						'valueB':'aloha'
+					})
+					.setUploadMode('old')
+					.setCallbacks({
+						'load': function(e){
+							console.log('load complete for '+uploader.getLastUploadedFileName(e));
+						},
+						'progress': function(e) {
+							console.log( 'Progress = ' + uploader.trackUploadProgress(e));
+						}
+					})
+					.Upload(e)
+				}
+		);
+
+		$('#fileUploadDiv4').bind('click',
+				function (e) {
+					uploader.setParams({
+						'valueA': 'foo',
+						'valueB': 'bar'
+					})
+					.setUploadMode('old')
+					.setFileList($('#fileUploadContainer2'))
+					.setCallbacks({
+						'load': function(e){
+							console.log('load complete for '+uploader.getLastUploadedFileName(e));
+						},
+						'progress': function(e) {
+							console.log( 'Progress = ' + uploader.trackUploadProgress(e));
+						}
+					})
+					.Upload(e)
+		});
+
+
+	});
+
+</script>
+<style>
+	.fileUploadDiv {
+		border: 1px solid black;
+		width: 200px;
+		height: 200px;
+		float: left;
+	}
+</style>
+<body>
+
+<div class="container">
+	<div id="fileUploadDiv1">Bind on select event<input type=file multiple></div>
+	<div>Bind on submit click<input type=file multiple id="fileUploadContainer"><input type="submit"  id="fileUploadDiv2"></div>
+	<div  id="fileUploadDiv3">IE-mode: bind on select, no name for input <input type=file multiple></div>
+	<div>IE-mode: bind on submit click, has name on input<input type=file multiple name="containerIE2" id="fileUploadContainer2"><input type="submit"  id="fileUploadDiv4"></div>
+</div>
+</body>
+</html>
+
