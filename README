@@ -1,0 +1,4 @@
+Yet another file uploader.
+Uses HTML5 File Api (if applicable), or falls back to old hidden iframe upload mechanics
+
+Uses: jquery (soon should be rewritten without it)
