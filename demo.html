@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="description" content=""/>
 <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="js/js-fileuploader.js"></script>
+<script type="text/javascript" src="js/js-uploader.js"></script>
 <script>
 	$(document).ready(function () {
 		var uploader = new FileUploader({});
@@ -50,7 +50,7 @@
 		$('#fileUploadDiv3').bind('change',
 				function (e) {
 					uploader.setParams({
-						'balueA':2,
+						'valueA':2,
 						'valueB':'aloha'
 					})
 					.setUploadMode('old')
@@ -72,8 +72,25 @@
 						'valueA': 'foo',
 						'valueB': 'bar'
 					})
-					.setUploadMode('old')
-					.setFileList($('#fileUploadContainer2'))
+					.setUploadMode('iframe')
+					.setCallbacks({
+						'load': function(e){
+							console.log('load complete for '+uploader.getLastUploadedFileName(e));
+						},
+						'progress': function(e) {
+							console.log( 'Progress = ' + uploader.trackUploadProgress(e));
+						}
+					})
+					.Upload(e)
+		});
+
+		$('#fileUploadDiv5').bind('click',
+				function (e) {
+					uploader.setParams({
+						'valueA': 'foo',
+						'valueB': 'bar'
+					})
+					.setUploadMode('iframe')
 					.setCallbacks({
 						'load': function(e){
 							console.log('load complete for '+uploader.getLastUploadedFileName(e));
@@ -104,6 +121,7 @@
 	<div>Bind on submit click<input type=file multiple id="fileUploadContainer"><input type="submit"  id="fileUploadDiv2"></div>
 	<div  id="fileUploadDiv3">IE-mode: bind on select, no name for input <input type=file multiple></div>
 	<div>IE-mode: bind on submit click, has name on input<input type=file multiple name="containerIE2" id="fileUploadContainer2"><input type="submit"  id="fileUploadDiv4"></div>
+	<div>IE-mode: bind on any item with uploadtarget, has name on input<input type=file multiple name="containerIE3" id="fileUploadContainer3"><a href="#" uploadtarget="fileUploadContainer3"  id="fileUploadDiv5">click me to upload file!</a></div>
 </div>
 </body>
 </html>

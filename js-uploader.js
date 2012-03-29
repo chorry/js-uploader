@@ -1,17 +1,19 @@
 /**
  * TODO:
- * отправлять куки;
- * ограничить количество доступных файлов для выбора
- * файлы собираются в группы до определенного количества мегабайт, или до определенного количества файлов в группе;
- * отправлять методом POST любые параметры вместе с файлом; [+]
- * предоставлять возможность выбора сразу нескольких файлов; [+]
- * отправлять файлы группами [+];
- * поддержка IE6 (via iframe) [+]
+ * РѕС‚РїСЂР°РІР»СЏС‚СЊ РєСѓРєРё;
+ * РѕРіСЂР°РЅРёС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РґРѕСЃС‚СѓРїРЅС‹С… С„Р°Р№Р»РѕРІ РґР»СЏ РІС‹Р±РѕСЂР°
+ * С„Р°Р№Р»С‹ СЃРѕР±РёСЂР°СЋС‚СЃСЏ РІ РіСЂСѓРїРїС‹ РґРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° РјРµРіР°Р±Р°Р№С‚, РёР»Рё РґРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РєРѕР»РёС‡РµСЃС‚РІР° С„Р°Р№Р»РѕРІ РІ РіСЂСѓРїРїРµ;
+ * РѕС‚РїСЂР°РІР»СЏС‚СЊ РјРµС‚РѕРґРѕРј POST Р»СЋР±С‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РІРјРµСЃС‚Рµ СЃ С„Р°Р№Р»РѕРј; [+]
+ * РїСЂРµРґРѕСЃС‚Р°РІР»СЏС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹Р±РѕСЂР° СЃСЂР°Р·Сѓ РЅРµСЃРєРѕР»СЊРєРёС… С„Р°Р№Р»РѕРІ; [+]
+ * РѕС‚РїСЂР°РІР»СЏС‚СЊ С„Р°Р№Р»С‹ РіСЂСѓРїРїР°РјРё [+];
+ * РїРѕРґРґРµСЂР¶РєР° IE6 (via iframe) [+]
  *
  * TODO:
- * при отправке пачки толстых файлов - они улетают на сервер и грузятся какое-то время.
- * если отправить потом еще пачку файлов - то айдишники новых батчей перезапишут айдишники отправленных.
- * надо обьект с номерами сессий отправки
+ * РїСЂРё РѕС‚РїСЂР°РІРєРµ РїР°С‡РєРё С‚РѕР»СЃС‚С‹С… С„Р°Р№Р»РѕРІ - РѕРЅРё СѓР»РµС‚Р°СЋС‚ РЅР° СЃРµСЂРІРµСЂ Рё РіСЂСѓР·СЏС‚СЃСЏ РєР°РєРѕРµ-С‚Рѕ РІСЂРµРјСЏ.
+ * РµСЃР»Рё РѕС‚РїСЂР°РІРёС‚СЊ РїРѕС‚РѕРј РµС‰Рµ РїР°С‡РєСѓ С„Р°Р№Р»РѕРІ - С‚Рѕ Р°Р№РґРёС€РЅРёРєРё РЅРѕРІС‹С… Р±Р°С‚С‡РµР№ РїРµСЂРµР·Р°РїРёС€СѓС‚ Р°Р№РґРёС€РЅРёРєРё РѕС‚РїСЂР°РІР»РµРЅРЅС‹С….
+ * РЅР°РґРѕ РѕР±СЊРµРєС‚ СЃ РЅРѕРјРµСЂР°РјРё СЃРµСЃСЃРёР№ РѕС‚РїСЂР°РІРєРё
+ *
+ * РљР°Рє РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ
  */
 
 function FileUploader(options) {
@@ -58,7 +60,7 @@ function FileUploader(options) {
         //upload files in batches, if any
         for (i = 0; i < this.fileList.length; i = i + maxFilesPerBatch)
         {
-            console.log('sending batch' + i);
+            //console.log('sending batch' + i);
             var batchFileList = this.fileList.slice(i, i + maxFilesPerBatch);
             var batchXhr = this.uploadBatch(batchFileList);
             this.registerCallbacks(
@@ -96,23 +98,28 @@ function FileUploader(options) {
         var fileElementId;
         if ( $(e.target).attr('type') != 'submit')
         {
-            if ( typeof $(e.target).attr('id') == 'undefined')
+            if (typeof $(e.target).attr('uploadtarget') !== 'undefined')
             {
-                fileElementId = Math.floor(Math.random()*100) + 1;
-                $(e.target).attr('id',fileElementId);
+                fileElementId = $(e.target).attr('uploadtarget');
             }
             else
             {
-                fileElementId = $(e.target).attr('id');
+                if ( typeof $(e.target).attr('id') == 'undefined')
+                {
+                    fileElementId = Math.floor(Math.random()*100) + 1;
+                    $(e.target).attr('id',fileElementId);
+                }
+                else
+                {
+                    fileElementId = $(e.target).attr('id');
+                }
             }
         }
         else
         {
             fileElementId = $(e.target).parent().find('input[type=file]').attr('id');
-
         }
 
-        console.log('ElemId = '  + fileElementId);
         this.createUploadForm(id, fileElementId);
         this.createUploadIframe(id);
 
@@ -297,7 +304,6 @@ function FileUploader(options) {
      * @return {*}
      */
     this.setParams = function (k, v) {
-        this.formSettings = [];
         if (typeof k == 'object') {
             var fileUploader = this; //create this reference for 'each' construction
             $.each(k, function (i, j) {
@@ -331,7 +337,7 @@ function FileUploader(options) {
     /**
      * This part if for IE's iframe. U're gonna burn, MS!
      **/
-    this.createUploadIframe = function (id, uri)
+    this.createUploadIframe = function (id)
     {
         //create frame
         var frameId = this.frameName + id;
@@ -363,11 +369,14 @@ function FileUploader(options) {
            real.attr('name',fileElementId);
         }
         real.appendTo(form);
-
         $(form).hide();
         $(form).appendTo('body');
     }
 
+    this.getFormSettings = function()
+    {
+        return this.formSettings;
+    }
 
     this.file = null; // file/filelist handler
     this.fileList = null;
