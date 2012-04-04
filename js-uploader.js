@@ -22,7 +22,7 @@ function FileUploader(options) {
      * @return bool
      */
     this.CheckBrowser = function () {
-        if (window.File && window.FileList) return true; else return false;
+        if (window.File && window.FileList && this.mode == 'html5') return true; else return false;
         //fileReader and Blob are yet to be implemented
     }
 
@@ -34,7 +34,7 @@ function FileUploader(options) {
      */
     this.Upload = function (e) {
         //check for method
-        if (this.CheckBrowser() && this.mode == 'html5') {
+        if (this.CheckBrowser()) {
             return this.uploadHTML5(e);
         }
         else
@@ -130,19 +130,22 @@ function FileUploader(options) {
       		document.getElementById(formId).target = frameId;
       	}
 
-        var iframe = $('#' + frameId).load( function() {
-            var response = iframe.contents().find('body');
+        var ieCallbacks = this.callbacks;
+        var fThis = this;
+        var fId = id;
+
+        var iframe = $('#' + frameId).load( function(e) {
+            var response = iframe.contents().find('body').html();
+
             iframe.unbind('load');
-            try
-            {
-                return $.parseJSON(response);
-            }
-            catch (err)
-            {
-                return response.html();
-            }
+            /**
+             * call load callback;
+             */
+            ieCallbacks.load(e);
+            fThis.destroyFrameAndForm(fId);
+            //destroy form and frame
         });
-        
+
         var form = $('#' + formId);
      	$(form).attr('action', this.uploadUrl);
      	$(form).attr('method', 'POST');
@@ -226,7 +229,15 @@ function FileUploader(options) {
      * @param e
      */
     this.getLastUploadedFileName = function (e) {
-        return e.target.fuFileList[(e.target.fuFileList.length - 1)].name
+        if (this.CheckBrowser())
+        {
+            return e.target.fuFileList[(e.target.fuFileList.length - 1)].name
+        }
+        else
+        {
+            //if its iframe
+            return 'file';
+        }
     }
 
     /**
@@ -371,6 +382,13 @@ function FileUploader(options) {
         real.appendTo(form);
         $(form).hide();
         $(form).appendTo('body');
+    }
+
+    this.destroyFrameAndForm = function(id)
+    {
+        $('#' + this.frameName + id).remove();
+        $('#' + this.formName + id).remove();
+        return;
     }
 
     this.getFormSettings = function()
